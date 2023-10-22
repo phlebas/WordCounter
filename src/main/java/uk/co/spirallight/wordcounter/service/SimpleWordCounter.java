@@ -32,7 +32,7 @@ public class SimpleWordCounter implements WordCounter {
   }
 
   @Override
-  public void addWords(String word, String... additionalWords) throws InvalidWordException {
+  public Map<Boolean, List<String>> addWords(String word, String... additionalWords) throws InvalidWordException {
     List<String> words = getWordList(word, additionalWords);
     Map<Boolean, List<String>> wordLists =
         words.stream().collect(partitioningBy(WordValidator::isWordValid));
@@ -46,6 +46,7 @@ public class SimpleWordCounter implements WordCounter {
       log.warn(message);
       throw new InvalidWordException(message);
     }
+    return wordLists;
   }
 
   private List<String> getWordList(String word, String[] additionalWords) {
@@ -60,7 +61,7 @@ public class SimpleWordCounter implements WordCounter {
 
   @Override
   public Integer getWordCount(String word) {
-    return wordStore.getWordCount(word);
+    return wordStore.getWordCount(translator.translate(word));
   }
 
   private static class SimpleTranslator implements Translator {
